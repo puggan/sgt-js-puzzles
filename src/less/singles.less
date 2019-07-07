@@ -1,0 +1,30 @@
+#grid {
+  display: flex;
+  border: solid black 1px;
+  flex-direction: column;
+  justify-content: center;
+
+  > div {
+    display: flex;
+    justify-content: center;
+    > div {
+      font-size: 3em;
+      min-width: 1.25em;
+      min-height: 1.25em;
+      border: solid gray 1px;
+      text-align: center;
+    }
+  }
+
+  #grid-loading {
+    display: none;
+  }
+
+  &.loading {
+    flex-direction: row;
+    #grid-loading {
+      display: block;
+      margin: 1em auto;
+    }
+  }
+}

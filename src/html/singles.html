@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Singels, a JS UI for the SGT Puzzle Singels</title>
+		<meta charset="UTF-8" />
+		<link rel="stylesheet" href="/games/all.min.css" />
+	</head>
+	<body id="singles">
+		<div id="content">
+			<h1>Singles</h1>
+			<div id="grid" class="loading">
+				<span id="grid-loading">Loading</span>
+			</div>
+			<h2>Rules</h2>
+			<ul>
+				<li>The same number may only appear once per row and column.</li>
+				<li>Removed/Blocked numbers can't be neighbor with other Removed/Blocked numbers (N,W,S,E).</li>
+				<li>All numbers most be connected with the rest of the numbers (N,W,S,E).</li>
+			</ul>
+			<h2>How to Play</h2>
+			<ul>
+				<li>Remove number by tapping them with the remover-tool. (default left mouse-button).</li>
+				<li>Mark numbers as required by tapping them with the keep-tool. (default right mouse-button).</li>
+			</ul>
+			<div id="options">
+				<span id="option-toolbar">
+					<span id="option-toolbar-bindings">Left: Remove, Right: Keep</span>
+					<span id="option-swap">S</span>
+				</span>
+				<span id="option-button">O</span>
+			</div>
+		</div>
+		<script src="/games/singles.min.js"></script>
+	</body>
+</html>
