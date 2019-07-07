@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>SGT Puzzles</title>
+	</head>
+	<body>
+		<h1>Puzzles are fun</h1>
+		<p><b>TLDR:</b> Want to build your own puzzles, use the <a href="/api/">JSON-api</a> to get generated puzzles, just add an UI.</p>
+		<p>I love playing puzzle-games, I can do them on paper, but I prefer an friendly UI that helps me keep track of clues.</p>
+		<p>Simon G. Tatham (SGT) <a href="https://www.chiark.greenend.org.uk/~sgtatham/puzzles/">Puzzle collection</a> have allot of good puzzles, and often a good UI.</p>
+		<p>I also plays <a href="https://en.wikipedia.org/wiki/Nonogram">nonograms</a>(/pattern) with non-random images, and <a href='https://en.wikipedia.org/wiki/Zebra_Puzzle'>Zebra-puzzles</a></p>
+		<p>In this project I used Simons code to generate puzzle-states, and then converting them to JSON-format, and then addin my own UI.</p>
+
+		<h2>Api</h2>
+		<p>In the <a href="/api/">API</a>-folder you find a few php-script, that genereates a game-state in JSON-format.</p>
+		<p>Thus can be used to implement your own UI, or to build a solver.</p>
+		<p>So far I have implemented an JSON-format for 15 of the puzzles.</p>
+
+		<h2>Code / Repo</h2>
+		<p>Here is the source-code for all parts of the project:</p>
+		<ul>
+			<li><a href="https://git.tartarus.org/?p=simon/puzzles.git">SGT Puzzle collection [c]</a>: The original code from Simon.</li>
+			<li><a href="https://github.com/puggan/sgt-puzzles">Patched SGT Puzzles [c]</a><: My modification, to make the standalone solvers output a single game-state that i can parse.</li>
+			<li><a href="https://github.com/puggan/sgt-json-puzzle">JSON-API [php]</a>: My code to parse the solvers output and reformat it as JSON</li>
+			<li><a href="https://github.com/puggan/sgt-js-puzzle">My Puzzles [js]</a>: My implementation of a UI to the puzzles</li>
+		</ul>
+
+		<h2>Game Implementations</h2>
+		<p>Here is a list of all games I'm implemented so far:</p>
+		<ul>
+			<li>None :-(</li>
+		</ul>
+		<p>Here is the Games I'm started to implement, I'll move them up above when they are playable.</p>
+		<ul>
+			<li>None :-(</li>
+		</ul>
+		<p>Here is the Games I planning to implement, when I get the time:</p>
+		<ol>
+			<li>Singles</li>
+			<li>Signpost</li>
+			<li>Unruly</li>
+			<li>Towers</li>
+			<li>Unequal</li>
+			<li>Tents</li>
+			<li>Slant</li>
+			<li>Lightup</li>
+			<li>Loopy</li>
+			<li>Magnets</li>
+			<li>Dominosa</li>
+			<li>Filling</li>
+			<li>Pattern</li>
+			<li>Fifteen</li>
+			<li>Solo</li>
+		</ol>
+	</body>
+</html>
