@@ -1,3 +1,11 @@
+body.done {
+  background: lightgreen;
+
+  #grid > div > div.clear {
+    background: lightgreen;
+  }
+}
+
 #grid {
   display: flex;
   border: solid black 1px;
@@ -7,12 +15,59 @@
   > div {
     display: flex;
     justify-content: center;
+
     > div {
       font-size: 3em;
       min-width: 1.25em;
       min-height: 1.25em;
       border: solid gray 1px;
       text-align: center;
+      box-sizing: border-box;
+
+      color: gray;
+      background: white;
+
+      &.collition {
+        color: black;
+
+        &.selected-collition {
+          color: red;
+        }
+      }
+
+      &.removed {
+        background: black;
+
+        &.adj-block {
+          color: red;
+        }
+      }
+
+      &.kept {
+        background: lightgreen;
+      }
+
+      &.island {
+        background: yellow;
+        color: red;
+        border-color: red;
+
+        &.island-N {
+          border-top-width: 5px;
+        }
+
+        &.island-W {
+          border-left-width: 5px;
+        }
+
+        &.island-S {
+          border-bottom-width: 5px;
+        }
+
+        &.island-E {
+          border-right-width: 5px;
+        }
+      }
     }
   }
 
@@ -22,9 +77,20 @@
 
   &.loading {
     flex-direction: row;
+
     #grid-loading {
       display: block;
       margin: 1em auto;
     }
   }
+}
+
+#rules > li.done {
+  color: darkgreen;
+  font-weight: bold;
+}
+
+#rules > li.error {
+  color: darkred;
+  font-weight: bold;
 }

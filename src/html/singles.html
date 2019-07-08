@@ -12,22 +12,22 @@
 				<span id="grid-loading">Loading</span>
 			</div>
 			<h2>Rules</h2>
-			<ul>
-				<li>The same number may only appear once per row and column.</li>
-				<li>Removed/Blocked numbers can't be neighbor with other Removed/Blocked numbers (N,W,S,E).</li>
-				<li>All numbers most be connected with the rest of the numbers (N,W,S,E).</li>
+			<ul id="rules">
+				<li id="rule-collition">The same number may only appear once per row and column. <span id="rule-collition-status"></span></li>
+				<li id="rule-adjblock">Removed/Blocked numbers can't be neighbor with other Removed/Blocked numbers (N,W,S,E).</li>
+				<li id="rule-connected">All numbers most be connected with the rest of the numbers (N,W,S,E).</li>
 			</ul>
 			<h2>How to Play</h2>
 			<ul>
 				<li>Remove number by tapping them with the remover-tool. (default left mouse-button).</li>
-				<li>Mark numbers as required by tapping them with the keep-tool. (default right mouse-button).</li>
+				<li>Mark numbers as required by tapping them with the keep-tool. (default right mouse-button, or 2 left).</li>
 			</ul>
 			<div id="options">
 				<span id="option-toolbar">
 					<span id="option-toolbar-bindings">Left: Remove, Right: Keep</span>
-					<span id="option-swap">S</span>
+					<span id="option-swap">Swap</span>
 				</span>
-				<span id="option-button">O</span>
+				<!-- span id="option-button">O</span -->
 			</div>
 		</div>
 		<script src="/games/singles.min.js"></script>
