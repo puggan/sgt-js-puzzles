@@ -41,6 +41,6 @@
     "gulp-typescript": "^5.0.1",
     "gulp-uglify-es": "^1.0.4",
     "imagemin-pngquant": "^8.0.0",
-    "typescript": "^3.5.2"
+    "typescript": "^3.5.3"
   }
 }
