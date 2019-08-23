@@ -39,24 +39,13 @@ const css_task = () => gulp
 	// sourceRoot dosn't work with dual write, use mapSources instead
 	.pipe(plug.sourcemaps.mapSources(p => "../src/less/" + p))
 	.pipe(plug.sourcemaps.write("./", {includeContent: false}))
-	//.pipe(plug.sourcemaps.write("./", {includeContent: false, sourceRoot: "src/less/"}))
-	.pipe(plug.chmod(0o644))
-	.pipe(gulp.dest("games/"))
-	.pipe(plug.ignore.exclude("*.map"))
-
-	.pipe(plug.concat("all.css"))
-	.pipe(plug.sourcemaps.write("./", {includeContent: false}))
-	//.pipe(plug.sourcemaps.write("./", {includeContent: false, sourceRoot: "src/less/"}))
 	.pipe(plug.chmod(0o644))
 	.pipe(gulp.dest("games/"))
 	.pipe(plug.ignore.exclude("*.map"))
 
 	.pipe(plug.uglifycss({level: 2}))
-	.pipe(plug.rename("all.min.css"))
-	// sourceRoot dosn't work with dual write, use mapSources instead
-	.pipe(plug.sourcemaps.mapSources())
+	.pipe(plug.rename({extname: ".min.css"}))
 	.pipe(plug.sourcemaps.write("./", {includeContent: false}))
-	//.pipe(plug.sourcemaps.write("./", {includeContent: false, sourceRoot: "src/less/"}))
 	.pipe(plug.chmod(0o644))
 	.pipe(gulp.dest("games/"));
 gulp.task("css", css_task);
@@ -103,15 +92,15 @@ gulp.task("ts-test", ts_test_task);
 const html_task = () => gulp
 	.src("src/html/*.html")
 	.pipe(plug.plumber())
-	.pipe(plug.sourcemaps.init())
+	//.pipe(plug.sourcemaps.init())
 
 	.pipe(plug.htmlmin({
 		collapseWhitespace: true,
 		removeComments: true
 	}))
 	// sourceRoot dosn't work with dual write, use mapSources instead
-	.pipe(plug.sourcemaps.mapSources(p => "../src/html/" + p))
-	.pipe(plug.sourcemaps.write("./", {includeContent: false}))
+	//.pipe(plug.sourcemaps.mapSources(p => "../src/html/" + p))
+	//.pipe(plug.sourcemaps.write("./", {includeContent: false}))
 	//.pipe(plug.sourcemaps.write("./", {includeContent: false, sourceRoot: "src/less/"}))
 	.pipe(plug.chmod(0o644))
 	.pipe(gulp.dest("games/"));
