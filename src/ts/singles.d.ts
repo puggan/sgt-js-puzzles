@@ -8,6 +8,6 @@ interface Singles
 
 interface Window
 {
-	signless: Singles;
+	signles: Singles;
 }
-declare var signless: Singles;
+declare var signles: Singles;

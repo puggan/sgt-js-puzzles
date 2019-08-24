@@ -2,10 +2,10 @@
 
 document.addEventListener("DOMContentLoaded", async () =>
 {
-	if(!window.signless)
+	if(!window.signles)
 	{
 		// @ts-ignore
-		window.signless = {};
+		window.signles = {};
 	}
 
 	const grid = document.getElementById("grid");
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", async () =>
 		bindings.textContent = "Left: Remove, Right: Keep";
 	};
 	swap.addEventListener("click", swaping);
-	window.signless.swap = swaping;
+	window.signles.swap = swaping;
 
 	document.body.addEventListener("keyup", (event: HTMLElementEventMap["keyup"]) =>
 	{
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", async () =>
 	loading.textContent = "Generating new game.";
 
 	const response: SinglesJson = await (await fetch("https://sgt.sundragon.se/api/singles.php")).json();
-	window.signless.fetched = response;
+	window.signles.fetched = response;
 
 	loading.textContent = "Parsing new game.";
 
