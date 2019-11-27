@@ -1,9 +1,7 @@
 /// <reference path="./singles.d.ts" />
 
-document.addEventListener("DOMContentLoaded", async () =>
-{
-	if(!window.signles)
-	{
+document.addEventListener("DOMContentLoaded", async () => {
+	if (!window.signles) {
 		// @ts-ignore
 		window.signles = {};
 	}
@@ -23,11 +21,9 @@ document.addEventListener("DOMContentLoaded", async () =>
 
 	let swaped = false;
 
-	const swaping = () =>
-	{
+	const swaping = () => {
 		swaped = !swaped;
-		if(swaped)
-		{
+		if (swaped) {
 			bindings.textContent = "Left: Keep, Right: Remove";
 			return;
 		}
@@ -36,11 +32,9 @@ document.addEventListener("DOMContentLoaded", async () =>
 	swap.addEventListener("click", swaping);
 	window.signles.swap = swaping;
 
-	document.body.addEventListener("keyup", (event: HTMLElementEventMap["keyup"]) =>
-	{
+	document.body.addEventListener("keyup", (event: HTMLElementEventMap["keyup"]) => {
 		// noinspection JSRedundantSwitchStatement TODO add more keybindings
-		switch(event.key)
-		{
+		switch (event.key) {
 			case "s":
 				swaping();
 				break;
@@ -74,8 +68,7 @@ document.addEventListener("DOMContentLoaded", async () =>
 	 */
 	const warnings: number[][] = [];
 
-	const updateCell = (row_index, col_index) =>
-	{
+	const updateCell = (row_index, col_index) => {
 		const cell = refCells[row_index][col_index];
 		const status = statuses[row_index][col_index];
 		const warning = warnings[row_index][col_index];
@@ -85,23 +78,19 @@ document.addEventListener("DOMContentLoaded", async () =>
 		cell.classList.toggle("collition", (warning & 15) > 0);
 		cell.classList.toggle("selected-collition", (warning & 10) > 0);
 		cell.classList.toggle("adj-block", (warning & 16) > 0);
-		if((warning & 32) > 0)
-		{
+		if ((warning & 32) > 0) {
 			cell.classList.add("island");
 			cell.classList.toggle("island-N", (warning & 64) > 0);
 			cell.classList.toggle("island-W", (warning & 128) > 0);
 			cell.classList.toggle("island-S", (warning & 256) > 0);
 			cell.classList.toggle("island-E", (warning & 512) > 0);
-		}
-		else
-		{
+		} else {
 			cell.classList.remove("island");
 		}
 		cell.title = `Status: ${status}, Warning: ${warning} @ ${row_index}x${col_index}`;
 	};
 
-	const updateWarnings = () =>
-	{
+	const updateWarnings = () => {
 		const oldWarnings: number[][] = [];
 		const colNumbers: number[][] = [];
 		const rowNumbers: number[][] = [];
@@ -115,10 +104,10 @@ document.addEventListener("DOMContentLoaded", async () =>
 
 		// TODO: rewrite as non-recursice
 		const floodfill = (row_index, col_index) => {
-			if(col_index < 0 || row_index < 0) return;
-			if(row_index >= connected.length ) return;
-			if(col_index >= connected[row_index].length ) return;
-			if(connected[row_index][col_index]) return;
+			if (col_index < 0 || row_index < 0) return;
+			if (row_index >= connected.length) return;
+			if (col_index >= connected[row_index].length) return;
+			if (connected[row_index][col_index]) return;
 			connected[row_index][col_index] = true;
 			floodfill(row_index - 1, col_index);
 			floodfill(row_index, col_index - 1);
@@ -129,12 +118,9 @@ document.addEventListener("DOMContentLoaded", async () =>
 		//<editor-fold desc="Reset and init arrays">
 		let row_index = 0;
 		let col_index = 0;
-		for(const row of response.state)
-		{
-			if(row_index === 0)
-			{
-				for(const cell of row)
-				{
+		for (const row of response.state) {
+			if (row_index === 0) {
+				for (const cell of row) {
 					colCollations[col_index] = false;
 					colNumbers[col_index] = [0];
 					selectedColNumbers[col_index] = [0];
@@ -147,8 +133,7 @@ document.addEventListener("DOMContentLoaded", async () =>
 			rowNumbers[row_index] = [0];
 			selectedRowNumbers[row_index] = [0];
 			col_index = 0;
-			for(const cell of row)
-			{
+			for (const cell of row) {
 				oldWarnings[row_index][col_index] = warnings[row_index][col_index];
 				warnings[row_index][col_index] = 0;
 				connected[row_index][col_index] = false;
@@ -164,33 +149,26 @@ document.addEventListener("DOMContentLoaded", async () =>
 
 		// <editor-fold desc="Count">
 		row_index = 0;
-		for(const row of response.state)
-		{
+		for (const row of response.state) {
 			col_index = 0;
-			for(const cell of row)
-			{
+			for (const cell of row) {
 				const status = statuses[row_index][col_index];
 
-				if(status === 1)
-				{
+				if (status === 1) {
 					connected[row_index][col_index] = true;
 				}
-				if(status === 2)
-				{
+				if (status === 2) {
 					selectedColNumbers[col_index][cell]++;
 					selectedRowNumbers[row_index][cell]++;
 				}
 
-				if(status === 2 || status === 0)
-				{
-					if(colNumbers[col_index][cell])
-					{
+				if (status === 2 || status === 0) {
+					if (colNumbers[col_index][cell]) {
 						colCollations[col_index] = true;
 					}
 					colNumbers[col_index][cell]++;
 
-					if(rowNumbers[row_index][cell])
-					{
+					if (rowNumbers[row_index][cell]) {
 						rowCollations[row_index] = true;
 					}
 					rowNumbers[row_index][cell]++;
@@ -207,74 +185,60 @@ document.addEventListener("DOMContentLoaded", async () =>
 
 		//<editor-fold desc="Test cells">
 		row_index = 0;
-		for(const row of response.state)
-		{
+		for (const row of response.state) {
 			col_index = 0;
-			for(const cell of row)
-			{
+			for (const cell of row) {
 				//<editor-fold desc="Rule 1 Collition, Flag: 1,2,4,8">
 				const status = statuses[row_index][col_index];
-				if(status === 1)
-				{
-					if(col_index > 0 && statuses[row_index][col_index - 1] === 1) {
+				if (status === 1) {
+					if (col_index > 0 && statuses[row_index][col_index - 1] === 1) {
 						warnings[row_index][col_index] |= 16;
 						warnings[row_index][col_index - 1] |= 16;
 						adjBlock = true;
 					}
-					if(row_index > 0 && statuses[row_index - 1][col_index] === 1) {
+					if (row_index > 0 && statuses[row_index - 1][col_index] === 1) {
 						warnings[row_index][col_index] |= 16;
 						warnings[row_index - 1][col_index] |= 16;
 						adjBlock = true;
 					}
 				}
 
-				if(status === 2 || status === 0)
-				{
-					if(status === 2)
-					{
-						if(selectedColNumbers[col_index][cell] > 1)
-						{
+				if (status === 2 || status === 0) {
+					if (status === 2) {
+						if (selectedColNumbers[col_index][cell] > 1) {
 							warnings[row_index][col_index] += 8;
 						}
-						if(selectedRowNumbers[row_index][cell] > 1)
-						{
+						if (selectedRowNumbers[row_index][cell] > 1) {
+							warnings[row_index][col_index] += 2;
+						}
+					} else {
+						if (selectedColNumbers[col_index][cell] > 0) {
+							warnings[row_index][col_index] += 8;
+						}
+						if (selectedRowNumbers[row_index][cell] > 0) {
 							warnings[row_index][col_index] += 2;
 						}
 					}
-					else
-					{
-						if(selectedColNumbers[col_index][cell] > 0)
-						{
-							warnings[row_index][col_index] += 8;
-						}
-						if(selectedRowNumbers[row_index][cell] > 0)
-						{
-							warnings[row_index][col_index] += 2;
-						}
-					}
-					if(colNumbers[col_index][cell] > 1)
-					{
+					if (colNumbers[col_index][cell] > 1) {
 						warnings[row_index][col_index] += 4;
 					}
-					if(rowNumbers[row_index][cell] > 1)
-					{
+					if (rowNumbers[row_index][cell] > 1) {
 						warnings[row_index][col_index] += 1;
 					}
 
-					if(!connected[row_index][col_index])
-					{
+					if (!connected[row_index][col_index]) {
 						islands = true;
 						warnings[row_index][col_index] |= 32;
-						if(row_index === 0 || connected[row_index - 1][col_index]) {
+						if (row_index === 0 || connected[row_index - 1][col_index]) {
 							warnings[row_index][col_index] |= 64;
 						}
-						if(col_index === 0 || connected[row_index][col_index - 1]) {
+						if (col_index === 0 || connected[row_index][col_index - 1]) {
 							warnings[row_index][col_index] |= 128;
 						}
-						if(row_index + 1 === connected.length || connected[row_index + 1][col_index]) {
+						if (row_index + 1 === connected.length || connected[row_index + 1][col_index]) {
 							warnings[row_index][col_index] |= 256;
 						}
-						if(col_index + 1 === connected[row_index].length || connected[row_index][col_index + 1]) {
+						if (col_index + 1 === connected[row_index].length || connected[row_index][col_index + 1]) {
 							warnings[row_index][col_index] |= 512;
 						}
 					}
@@ -290,25 +254,17 @@ document.addEventListener("DOMContentLoaded", async () =>
 		//<editor-fold desc="Update Rule">
 		let noCollitions = 0;
 		let haveColltions = 0;
-		for(const test of colCollations)
-		{
-			if(test)
-			{
+		for (const test of colCollations) {
+			if (test) {
 				haveColltions++;
-			}
-			else
-			{
+			} else {
 				noCollitions++;
 			}
 		}
-		for(const test of rowCollations)
-		{
-			if(test)
-			{
+		for (const test of rowCollations) {
+			if (test) {
 				haveColltions++;
-			}
-			else
-			{
+			} else {
 				noCollitions++;
 			}
 		}
@@ -322,14 +278,11 @@ document.addEventListener("DOMContentLoaded", async () =>
 
 		//<editor-fold desc="Update changed cells">
 		row_index = 0;
-		for(const row of response.state)
-		{
+		for (const row of response.state) {
 			rowCollations[row_index] = false;
 			col_index = 0;
-			for(const cell of row)
-			{
-				if(oldWarnings[row_index][col_index] !== warnings[row_index][col_index])
-				{
+			for (const cell of row) {
+				if (oldWarnings[row_index][col_index] !== warnings[row_index][col_index]) {
 					updateCell(row_index, col_index);
 				}
 				col_index++;
@@ -352,10 +305,8 @@ document.addEventListener("DOMContentLoaded", async () =>
 		 */
 	};
 
-	const keepToggle = (row_index, col_index) =>
-	{
-		switch(statuses[row_index][col_index])
-		{
+	const keepToggle = (row_index, col_index) => {
+		switch (statuses[row_index][col_index]) {
 			case 0:
 				statuses[row_index][col_index] = 2;
 				break;
@@ -366,10 +317,8 @@ document.addEventListener("DOMContentLoaded", async () =>
 		updateWarnings();
 		return updateCell(row_index, col_index);
 	};
-	const removeToggle = (row_index, col_index) =>
-	{
-		switch(statuses[row_index][col_index])
-		{
+	const removeToggle = (row_index, col_index) => {
+		switch (statuses[row_index][col_index]) {
 			case 0:
 			case 1:
 				statuses[row_index][col_index]++;
@@ -381,33 +330,27 @@ document.addEventListener("DOMContentLoaded", async () =>
 		return updateCell(row_index, col_index);
 	};
 
-	const cellMouseUpEvent = (row_index, col_index) => (event: HTMLElementEventMap["mouseup"]) =>
-	{
-		if(event.button)
-		{
-			if(swaped)
-			{
+	const cellMouseUpEvent = (row_index, col_index) => (event: HTMLElementEventMap["mouseup"]) => {
+		if (event.button) {
+			if (swaped) {
 				return removeToggle(row_index, col_index);
 			}
 			return keepToggle(row_index, col_index);
 		}
-		if(swaped)
-		{
+		if (swaped) {
 			return keepToggle(row_index, col_index);
 		}
 		return removeToggle(row_index, col_index);
 	};
 
 	let row_index = 0;
-	for(const row of response.state)
-	{
+	for (const row of response.state) {
 		let col_index = 0;
 		const refRow = [];
 		const statusRow = [];
 		const warningRow = [];
 		const rowElement = document.createElement("DIV");
-		for(const cell of row)
-		{
+		for (const cell of row) {
 			const cellElement = document.createElement("DIV");
 			cellElement.textContent = "" + cell;
 			cellElement.addEventListener("mouseup", cellMouseUpEvent(row_index, col_index));

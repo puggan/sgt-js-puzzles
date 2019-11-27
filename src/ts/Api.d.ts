@@ -1,5 +1,4 @@
-interface GameJson
-{
+interface GameJson {
 	id: string;
 	name: string;
 	seed: string;
@@ -7,19 +6,16 @@ interface GameJson
 	state: any;
 }
 
-interface GameSettingsSize
-{
+interface GameSettingsSize {
 	columns: number;
-	rows:number;
+	rows: number;
 }
 
-interface GameSettingsDifficulty extends GameSettingsSize
-{
+interface GameSettingsDifficulty extends GameSettingsSize {
 	difficulty: string;
 }
 
-interface SinglesJson extends GameJson
-{
+interface SinglesJson extends GameJson {
 	settings: GameSettingsDifficulty;
 	state: number[][];
 }
