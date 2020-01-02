@@ -1,0 +1,103 @@
+#grid {
+  font-size: 50px;
+  display: flex;
+  flex-direction: column;
+
+  > #grid-loading {
+    display: none;
+  }
+  &.loading > #grid-loading {
+    display: block;
+  }
+
+  > div {
+    display: flex;
+
+    > div {
+      box-sizing: border-box;
+      border: solid gray 1px;
+      min-width: 1.5em;
+      min-height: 1.5em;
+      line-height: 1.5em;
+      text-align: center;
+
+      &.done {
+        background-color: lightgreen;
+        color: gray;
+      }
+      &.error {
+        background-color: pink;
+      }
+
+      &.tree {
+        background-color: green;
+        &.error {
+          border: solid red 3px;
+        }
+      }
+
+      &.notent, &.solved {
+        background-color: lightgreen;
+      }
+
+      &.solved.solved-max {
+        background-color: yellow;
+      }
+
+      &.tent {
+        background-color: yellow;
+        &.error {
+          border: solid red 3px;
+          &.adjecent {
+            border-color: blue;
+          }
+        }
+      }
+
+    }
+  }
+}
+
+#option-toolbar {
+  display: flex;
+}
+
+#option-toolbar-bindings {
+  display: flex;
+
+  span {
+    margin-right: .5em;
+
+    &.tent {
+      background-color: yellow;
+      order: -1;
+    }
+    &.notent {
+      background-color: lightgreen;
+      order: 1;
+    }
+
+    &:first-child {
+      order: -2;
+    }
+  }
+
+  &.swaped {
+    .tent {
+      order: 1;
+    }
+    .notent {
+      order: -1;
+    }
+  }
+}
+
+#rules > li.done {
+  color: darkgreen;
+  font-weight: bold;
+}
+
+#rules > li.error {
+  color: darkred;
+  font-weight: bold;
+}

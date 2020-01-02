@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Tents, a JS UI for the SGT Puzzle Tents</title>
+        <meta charset="UTF-8"/>
+        <link rel="stylesheet" href="/games/base.min.css"/>
+        <link rel="stylesheet" href="/games/tents.min.css"/>
+    </head>
+    <body id="tents">
+        <div id="content">
+            <h1>Tents</h1>
+            <div id="grid" class="loading">
+                <span id="grid-loading">Loading</span>
+            </div>
+            <h2>Rules</h2>
+            <ul id="rules">
+                <li id="rule-tree-pairs">
+                    Each Tree is paired/connected to one adjacent Tent. (4 dir)
+                </li>
+                <li id="rule-tent-pairs">
+                    Each Tent is paired/connected to one adjacent Tree. (4 dir)
+                </li>
+                <li id="rule-adjecent">
+                    No Tent is adjacent to another Tree. (8 dir)
+                </li>
+                <li id="rule-numbers">
+                    A Row/Column should have exactly the number of Tent as shown by the number.
+                </li>
+            </ul>
+            <h2>How to Play</h2>
+            <ul>
+                <li>
+                    Place Tents adjacent to Trees
+                    (default left mouse-button).
+                </li>
+                <li>
+                    Mark space an Non-Tent
+                    (default right mouse-button, or 2 left).
+                </li>
+                <li>
+                    Mark None-Pair
+                    (default left mouse-button on a boarder).
+                </li>
+            </ul>
+            <div id="options">
+				<span id="option-toolbar">
+					<span id="option-toolbar-bindings">
+                        <span>Left:</span>
+                        <span class="tent">Tent,</span>
+                        <span>Right:</span>
+                        <span class="notent">Non-Tent</span>
+                    </span>
+					<span id="option-swap">Swap</span>
+				</span>
+            </div>
+        </div>
+        <script src="/games/tents.min.js"></script>
+    </body>
+</html>
