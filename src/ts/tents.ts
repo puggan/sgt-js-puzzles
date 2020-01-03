@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async () =>
     {
         swaped = !swaped;
         bindings.classList.toggle('swaped', swaped);
-        console.log({swaped, classes: bindings.classList});
+        //console.log({swaped, classes: bindings.classList});
     };
     swap.addEventListener("click", swaping);
     window.tents.swap = swaping;
@@ -178,9 +178,12 @@ document.addEventListener("DOMContentLoaded", async () =>
     const updateWarnings = () => {
         let countErrors = 0;
         let countMaybe = 0;
+        let countMaybeMin = 0;
+        let countMaybeMax = 0;
         let adjacentError = 0;
         let lonelyTent = 0;
         let lonelyTree = 0;
+        let tentList = [] as PointXY[];
         let treeList = [] as PointXY[];
 
         let colIndex = 0;
@@ -195,9 +198,11 @@ document.addEventListener("DOMContentLoaded", async () =>
             } else if(colCounts.clear > 0) {
                 countMaybe++;
                 if(colCounts.tents == cellNr) {
+                    countMaybeMin++;
                     cellClass += 'solved solved-low';
                 }
                 else if(colCounts.maxTents == cellNr) {
+                    countMaybeMax++;
                     cellClass += 'solved solved-max';
                 } else {
                     cellClass += 'ok';
@@ -220,9 +225,11 @@ document.addEventListener("DOMContentLoaded", async () =>
             } else if(rowCounts.tents < rowCounts.maxTents) {
                 countMaybe++;
                 if(rowCounts.tents == cellNr) {
+                    countMaybeMin++;
                     cellClass += 'solved solved-low';
                 }
                 else if(rowCounts.maxTents == cellNr) {
+                    countMaybeMax++;
                     cellClass += 'solved solved-max';
                 } else {
                     cellClass += 'ok';
@@ -249,23 +256,21 @@ document.addEventListener("DOMContentLoaded", async () =>
                             if(clearCount.orthogonal < 1) {
                                 lonelyTree++;
                                 warnings[rowIndex][colIndex] = LONYERROR;
-                                if(before !== LONYERROR) console.log({cell, x: colIndex, y: rowIndex, before, warning: warnings[rowIndex][colIndex], clearCount, tentCount});
                             }
                         }
                         break;
 
                     case TENT:
+                        tentList.push({x: colIndex, y: rowIndex});
                         const adjecentTentCount = adjecentCount(rowIndex, colIndex, TENT);
                         if(adjecentTentCount.orthogonal > 0 || adjecentTentCount.diagonal > 0) {
                             warnings[rowIndex][colIndex] = ADJECENTERROR;
                             adjacentError++;
-                            if(before !== ADJECENTERROR) console.log({cell, x: colIndex, y: rowIndex, before, warning: warnings[rowIndex][colIndex], adjecentTentCount});
                         } else {
                             const treeCount = adjecentCount(rowIndex, colIndex, TREE);
                             if(treeCount.orthogonal < 1) {
                                 lonelyTent++;
                                 warnings[rowIndex][colIndex] = LONYERROR;
-                                if(before !== LONYERROR) console.log({cell, x: colIndex, y: rowIndex, before, warning: warnings[rowIndex][colIndex], adjecentTentCount, treeCount});
                             }
                         }
                         break;
@@ -273,7 +278,6 @@ document.addEventListener("DOMContentLoaded", async () =>
                 if(before !== warnings[rowIndex][colIndex]) {
                     updateCell(rowIndex, colIndex);
                 }
-                if(cell === TENT) console.log({cell, x: colIndex, y: rowIndex, before, warning: warnings[rowIndex][colIndex]});
                 colIndex++;
             }
             rowIndex++;
@@ -282,8 +286,73 @@ document.addEventListener("DOMContentLoaded", async () =>
         ruleTreePairs.classList.toggle('error', lonelyTree > 0);
         ruleTentPairs.classList.toggle('error', lonelyTent > 0);
         ruleAdjecent.classList.toggle('error', adjacentError > 0);
-        ruleNumber.classList.toggle('done', countMaybe + countErrors === 0);
         ruleNumber.classList.toggle('error', countErrors > 0);
+
+        let allOk = countMaybe === countMaybeMin && countErrors === 0 && lonelyTent === 0 && lonelyTree === 0 && adjacentError === 0;
+        if(allOk) {
+            const adjecentDirections = [{x: -1, y: 0}, {x: 0, y: -1}, {x: 0, y: 1}, {x: 1, y: 0}];
+            let tentIndex;
+            let treeIndex;
+            let matchedIndex;
+            let lastCount = treeList.length * 2 + 1;
+            while(treeList.length > 0 && lastCount > treeList.length + tentList.length) {
+                lastCount = treeList.length + tentList.length;
+                for(tentIndex = tentList.length -1; tentIndex >= 0; tentIndex--) {
+                    matchedIndex = -1;
+                    for(treeIndex = treeList.length -1; treeIndex >= 0; treeIndex--) {
+                        for(const dir of adjecentDirections) {
+                            if(treeList[treeIndex].x + dir.x === tentList[tentIndex].x && treeList[treeIndex].y + dir.y === tentList[tentIndex].y) {
+                                if(matchedIndex >= 0) {
+                                    matchedIndex = -2;
+                                    break;
+                                }
+                                matchedIndex = treeIndex;
+                            }
+                        }
+                        if (matchedIndex < -1) {
+                            break;
+                        }
+                    }
+                    if(matchedIndex >= 0) {
+                        treeIndex = matchedIndex;
+                        console.log('pair', {tent: tentList[tentIndex], tree: treeList[treeIndex], left: treeList.length - 1});
+                        treeList.splice(treeIndex, 1);
+                        tentList.splice(tentIndex, 1);
+                    }
+                }
+                for(treeIndex = treeList.length -1; treeIndex >= 0; treeIndex--) {
+                    matchedIndex = -1;
+                    for(tentIndex = tentList.length -1; tentIndex >= 0; tentIndex--) {
+                        for(const dir of adjecentDirections) {
+                            if(treeList[treeIndex].x + dir.x === tentList[tentIndex].x && treeList[treeIndex].y + dir.y === tentList[tentIndex].y) {
+                                if(matchedIndex >= 0) {
+                                    matchedIndex = -2;
+                                    break;
+                                }
+                                matchedIndex = tentIndex;
+                            }
+                        }
+                        if (matchedIndex < -1) {
+                            break;
+                        }
+                    }
+                    if(matchedIndex >= 0) {
+                        tentIndex = matchedIndex;
+                        console.log('pair', {tent: tentList[tentIndex], tree: treeList[treeIndex], left: treeList.length - 1});
+                        treeList.splice(treeIndex, 1);
+                        tentList.splice(tentIndex, 1);
+                    }
+                }
+            }
+            if(treeList.length > 0) {
+                allOk = false;
+            }
+        }
+        ruleNumber.classList.toggle('done', allOk || countMaybe === 0 && countErrors === 0);
+        ruleTreePairs.classList.toggle('done', allOk);
+        ruleTentPairs.classList.toggle('done', allOk);
+        ruleAdjecent.classList.toggle('done', allOk);
+        document.body.classList.toggle("done", allOk);
     };
 
     const baseToggle = (rowIndex, colIndex) => {
@@ -373,14 +442,20 @@ document.addEventListener("DOMContentLoaded", async () =>
             rowIndex++;
         }
 
-        if(colCounts.tents === expected) {
-            for(rowIndex of clearsFound) {
+        if (colCounts.tents === expected) {
+            for (rowIndex of clearsFound) {
                 statuses[rowIndex][colIndex] = NONTENT;
             }
-        }
-        if(colCounts.maxTents === expected) {
-            for(rowIndex of clearsFound) {
+        } else if (colCounts.maxTents === expected) {
+            for (rowIndex of clearsFound) {
                 statuses[rowIndex][colIndex] = TENT;
+            }
+        } else {
+            for (rowIndex of clearsFound) {
+                const treeCount = adjecentCount(rowIndex, colIndex, TREE);
+                if (treeCount.orthogonal === 0) {
+                    statuses[rowIndex][colIndex] = NONTENT;
+                }
             }
         }
 
@@ -414,14 +489,20 @@ document.addEventListener("DOMContentLoaded", async () =>
             colIndex++;
         }
 
-        if(rowCounts.tents === expected) {
-            for(colIndex of clearsFound) {
+        if (rowCounts.tents === expected) {
+            for (colIndex of clearsFound) {
                 statuses[rowIndex][colIndex] = NONTENT;
             }
-        }
-        if(rowCounts.maxTents === expected) {
-            for(colIndex of clearsFound) {
+        } else if (rowCounts.maxTents === expected) {
+            for (colIndex of clearsFound) {
                 statuses[rowIndex][colIndex] = TENT;
+            }
+        } else {
+            for (colIndex of clearsFound) {
+                const treeCount = adjecentCount(rowIndex, colIndex, TREE);
+                if (treeCount.orthogonal === 0) {
+                    statuses[rowIndex][colIndex] = NONTENT;
+                }
             }
         }
 
@@ -434,6 +515,27 @@ document.addEventListener("DOMContentLoaded", async () =>
                 tentArea(rowIndex, colIndex);
             }
             colIndex++;
+        }
+        updateWarnings();
+    };
+
+    const totalCountMouseUpEvent = (event: HTMLElementEventMap["mouseup"]) => {
+        let rowIndex = 0;
+        for(const statusRow of statuses) {
+            let colIndex = 0;
+            for (const cell of statusRow) {
+                if(cell === CLEAR) {
+                    const treeCount = adjecentCount(rowIndex, colIndex, TREE);
+                    if (treeCount.orthogonal === 0) {
+                        statuses[rowIndex][colIndex] = NONTENT;
+                        updateCell(rowIndex, colIndex);
+                    }
+                } else if (cell === TENT) {
+                    tentArea(rowIndex, colIndex);
+                }
+                colIndex++;
+            }
+            rowIndex++;
         }
         updateWarnings();
     };
@@ -461,7 +563,6 @@ document.addEventListener("DOMContentLoaded", async () =>
         }
         const cellElement = document.createElement("DIV");
         cellElement.addEventListener("mouseup", rowCountMouseUpEvent(rowIndex));
-        cellElement.addEventListener("contextmenu", preventEvent);
         cellElement.classList.add('row-count');
         cellElement.innerText = ''+response.state.rows[rowIndex];
         rowCountCells.push(cellElement);
@@ -480,7 +581,6 @@ document.addEventListener("DOMContentLoaded", async () =>
         tentCount += cell;
         const cellElement = document.createElement("DIV");
         cellElement.addEventListener("mouseup", colCountMouseUpEvent(colIndex));
-        cellElement.addEventListener("contextmenu", preventEvent);
         cellElement.classList.add('col-count');
         cellElement.innerText = ''+cell;
         colCountCells.push(cellElement);
@@ -488,6 +588,7 @@ document.addEventListener("DOMContentLoaded", async () =>
         colIndex++;
     }
     const cellElement = document.createElement("DIV");
+    cellElement.addEventListener("mouseup", totalCountMouseUpEvent);
     cellElement.classList.add('fill-count');
     cellElement.textContent = ''+tentCount;
     colCountCells.push(cellElement);

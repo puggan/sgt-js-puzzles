@@ -1,3 +1,14 @@
+body.done {
+  background: lightgreen;
+
+  #grid > div > div {
+    &.clear, &.row-count, &.col-count {
+      background: lightgreen;
+      color: gray;
+    }
+  }
+}
+
 #grid {
   font-size: 50px;
   display: flex;
