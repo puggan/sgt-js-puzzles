@@ -19,7 +19,6 @@ const plug = {
 	uglifyjs: require("gulp-uglify-es"),
 	watch: require("gulp-watch"),
 };
-//</editor-fold>
 
 //<editor-fold desc="Task Less/CSS">
 const css_task = () => gulp
@@ -60,7 +59,8 @@ const css_watch_task = () => plug
 	.pipe(plug.rename({extname: ".min.css"}))
 	.pipe(plug.sourcemaps.write("./", {includeContent: false}))
 	.pipe(plug.chmod(0o644))
-	.pipe(gulp.dest("games/"));
+	.pipe(gulp.dest("games/"))
+	.pipe(plug.debug({title: '/watch-css'}));
 gulp.task("watch-css", css_watch_task);
 //</editor-fold>
 
@@ -112,7 +112,8 @@ const ts_watch_task = () => plug
 	.pipe(plug.rename({suffix: ".min"}))
 	.pipe(plug.sourcemaps.write("./", {includeContent: false}))
 	.pipe(plug.chmod(0o644))
-	.pipe(gulp.dest("games/"));
+	.pipe(gulp.dest("games/"))
+	.pipe(plug.debug({title: '/watch-ts'}));
 
 gulp.task("watch-ts", ts_watch_task);
 
@@ -160,14 +161,14 @@ const html_watch_task = () => plug
 	//.pipe(plug.sourcemaps.write("./", {includeContent: false}))
 	//.pipe(plug.sourcemaps.write("./", {includeContent: false, sourceRoot: "src/less/"}))
 	.pipe(plug.chmod(0o644))
-	.pipe(gulp.dest("games/"));
+	.pipe(gulp.dest("games/"))
+	.pipe(plug.debug({title: '/watch-html'}));
 gulp.task("watch-html", html_watch_task);
 //</editor-fold>
 
 //<editor-fold desc="Task IMG">
 const img_task = () => gulp
 	.src('src/i/*.{jpeg,jpg,png}')
-	.pipe(plug.debug({title: 'watch-img'}))
 	.pipe(plug.imagemin({
 		progressive: true,
 		use: [plug.pngquant()]
@@ -177,11 +178,13 @@ gulp.task("img", img_task);
 
 const img_watch_task = () => plug
 	.watch('src/i/*.{jpeg,jpg,png}')
+	.pipe(plug.debug({title: 'watch-img'}))
 	.pipe(plug.imagemin({
 		progressive: true,
 		use: [plug.pngquant()]
 	}))
-	.pipe(gulp.dest('games/i/'));
+	.pipe(gulp.dest('games/i/'))
+	.pipe(plug.debug({title: '/watch-img'}));
 gulp.task("watch-img", img_watch_task);
 //</editor-fold>
 
