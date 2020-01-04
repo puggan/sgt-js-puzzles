@@ -7,8 +7,33 @@ document.addEventListener("DOMContentLoaded", async () =>
     const TENT = 2;
     const NONTENT = 3;
     const LOCKEDNONTENT = 4;
+
     const LONYERROR = 1;
     const ADJECENTERROR = 2;
+
+    const DIR_N = 0x1;
+    const BLOCK_N = 0x2;
+    const DIR_S = 0x4;
+    const BLOCK_S = 0x8;
+    const DIR_W = 0x10;
+    const BLOCK_W = 0x20;
+    const DIR_E = 0x40;
+    const BLOCK_E = 0x80;
+    const DIR_ALL = DIR_N | DIR_S | DIR_E | DIR_W;
+    const BLOCK_ALL = BLOCK_N | BLOCK_S | BLOCK_E | BLOCK_W;
+
+    const adjecentDirections: Direction[] = [
+        {x: -1, y: 0, dir: DIR_W, reverse: DIR_E},
+        {x: 1, y: 0, dir: DIR_E, reverse: DIR_W},
+        {x: 0, y: -1, dir: DIR_N, reverse: DIR_S},
+        {x: 0, y: 1, dir: DIR_S, reverse: DIR_N},
+    ];
+    const adjecentDirectionsMap = {
+        DIR_E: adjecentDirections[0],
+        DIR_W: adjecentDirections[1],
+        DIR_N: adjecentDirections[2],
+        DIR_S: adjecentDirections[3],
+    }
 
     if(!window.tents)
     {
@@ -61,32 +86,31 @@ document.addEventListener("DOMContentLoaded", async () =>
     const rowCountCells: HTMLElement[] = [];
     const statuses: number[][] = [];
 
-    /** TODO: bellow is for Singles
-     * 0: no Warnings
-     * &1: row-collition
-     * &2: selected-row-collition
-     * &4: col-collition
-     * &8: selected-col-collition
-     * &16: adjblock
-     * &32: disconnected
-     * &64: disconnected-N
-     * &128: disconnected-W
-     * &256: disconnected-S
-     * &512: disconnected-E
-     */
     const warnings: number[][] = [];
+    const connections: number[][] = [];
 
     const updateCell = (rowIndex, colIndex) => {
         const cell = refCells[rowIndex][colIndex];
         const status = statuses[rowIndex][colIndex];
         const warning = warnings[rowIndex][colIndex];
+        const connection = connections[rowIndex][colIndex];
+        const dir = connection & DIR_ALL;
+        const block = connection & BLOCK_ALL;
         cell.classList.toggle("clear", status === CLEAR && warning === 0);
         cell.classList.toggle("tent", status === TENT);
         cell.classList.toggle("notent", status === NONTENT);
         cell.classList.toggle("error", warning !== CLEAR);
         cell.classList.toggle("lonly", warning === LONYERROR);
         cell.classList.toggle("adjecent", warning === ADJECENTERROR);
-        cell.title = `Status: ${status}, Warning: ${warning} @ ${rowIndex}x${colIndex}`;
+        cell.classList.toggle("north", dir === DIR_N);
+        cell.classList.toggle("west", dir === DIR_W);
+        cell.classList.toggle("south", dir === DIR_S);
+        cell.classList.toggle("east", dir === DIR_E);
+        cell.classList.toggle("not-north", !dir && (block & BLOCK_N) > 0);
+        cell.classList.toggle("not-west", !dir && (block & BLOCK_W) > 0);
+        cell.classList.toggle("not-south", !dir && (block & BLOCK_S) > 0);
+        cell.classList.toggle("not-east", !dir && (block & BLOCK_E) > 0);
+        cell.title = `Status: ${status}, Warning: ${warning}` + (connection ? `, Connection: ${connection}` : '') + ` @ ${rowIndex}x${colIndex}`;
     };
 
     const colCount = (colIndex) => {
@@ -290,10 +314,10 @@ document.addEventListener("DOMContentLoaded", async () =>
 
         let allOk = countMaybe === countMaybeMin && countErrors === 0 && lonelyTent === 0 && lonelyTree === 0 && adjacentError === 0;
         if(allOk) {
-            const adjecentDirections = [{x: -1, y: 0}, {x: 0, y: -1}, {x: 0, y: 1}, {x: 1, y: 0}];
             let tentIndex;
             let treeIndex;
             let matchedIndex;
+            let matchedDir: Direction = null;
             let lastCount = treeList.length * 2 + 1;
             while(treeList.length > 0 && lastCount > treeList.length + tentList.length) {
                 lastCount = treeList.length + tentList.length;
@@ -307,6 +331,7 @@ document.addEventListener("DOMContentLoaded", async () =>
                                     break;
                                 }
                                 matchedIndex = treeIndex;
+                                matchedDir = dir;
                             }
                         }
                         if (matchedIndex < -1) {
@@ -315,7 +340,6 @@ document.addEventListener("DOMContentLoaded", async () =>
                     }
                     if(matchedIndex >= 0) {
                         treeIndex = matchedIndex;
-                        console.log('pair', {tent: tentList[tentIndex], tree: treeList[treeIndex], left: treeList.length - 1});
                         treeList.splice(treeIndex, 1);
                         tentList.splice(tentIndex, 1);
                     }
@@ -330,6 +354,7 @@ document.addEventListener("DOMContentLoaded", async () =>
                                     break;
                                 }
                                 matchedIndex = tentIndex;
+                                matchedDir = dir;
                             }
                         }
                         if (matchedIndex < -1) {
@@ -338,7 +363,10 @@ document.addEventListener("DOMContentLoaded", async () =>
                     }
                     if(matchedIndex >= 0) {
                         tentIndex = matchedIndex;
-                        console.log('pair', {tent: tentList[tentIndex], tree: treeList[treeIndex], left: treeList.length - 1});
+                        const tent = tentList[tentIndex];
+                        const tree = treeList[treeIndex];
+                        connections[tree.y][tree.x] = (connections[tree.y][tree.x] & BLOCK_ALL) | matchedDir.dir;
+                        connections[tent.y][tent.x] = (connections[tent.y][tent.x] & BLOCK_ALL) | matchedDir.reverse;
                         treeList.splice(treeIndex, 1);
                         tentList.splice(tentIndex, 1);
                     }
@@ -346,6 +374,89 @@ document.addEventListener("DOMContentLoaded", async () =>
             }
             if(treeList.length > 0) {
                 allOk = false;
+            }
+        } else {
+            const oldConnections = [] as number[][];
+            for(const connectionRow of connections) {
+                const oldConnectionRow = [];
+                const columnCount = connectionRow.length;
+                for(let columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+                    oldConnectionRow.push(connectionRow[columnIndex]);
+                    connectionRow[columnIndex] &= BLOCK_ALL;
+                }
+                oldConnections.push(oldConnectionRow);
+            }
+
+            let count = tentList.length + treeList.length;
+            let lastCount = count + 1;
+            while(count > 0 && lastCount > count) {
+                lastCount = count;
+                // match tents
+                for(const tent of tentList) {
+                    if(connections[tent.y][tent.x] & DIR_ALL) {
+                        continue;
+                    }
+                    const possibleDirections: Direction[] = [];
+                    for(const dir of adjecentDirections) {
+                        const posX = tent.x + dir.x;
+                        const posY = tent.y + dir.y;
+                        if (posX < 0 || posY < 0 || posY >= connections.length || posX >= connections[posY].length) {
+                            continue;
+                        }
+                        const adjecentCell = statuses[posY][posX];
+                        if(adjecentCell === TREE) {
+                            if ((connections[posY][posX] & DIR_ALL) === 0) {
+                                possibleDirections.push(dir);
+                            }
+                        }
+                    }
+                    if(possibleDirections.length === 1) {
+                        const dir = possibleDirections[0];
+                        connections[tent.y][tent.x] |= dir.dir;
+                        connections[tent.y + dir.y][tent.x + dir.x] |= dir.reverse;
+                        count -= 2;
+                    }
+                }
+                // Clear trees
+                for(const tree of treeList) {
+                    if (connections[tree.y][tree.x] & DIR_ALL) {
+                        continue;
+                    }
+                    const possibleDirections: Direction[] = [];
+                    for(const dir of adjecentDirections) {
+                        const posX = tree.x + dir.x;
+                        const posY = tree.y + dir.y;
+                        if (posX < 0 || posY < 0 || posY >= connections.length || posX >= connections[posY].length) {
+                            continue;
+                        }
+                        const adjecentCell = statuses[posY][posX];
+                        if(adjecentCell === TENT || adjecentCell === CLEAR) {
+                            if ((connections[posY][posX] & DIR_ALL) === 0) {
+                                possibleDirections.push(dir);
+                            }
+                        }
+                    }
+                    if(possibleDirections.length === 1) {
+                        const dir = possibleDirections[0];
+                        connections[tree.y][tree.x] |= dir.dir;
+                        connections[tree.y + dir.y][tree.x + dir.x] |= dir.reverse;
+                        count--;
+                        if(statuses[tree.y + dir.y][tree.x + dir.x] === TENT) {
+                            count--;
+                        }
+                    }
+                }
+            }
+
+            const rowCount = oldConnections.length;
+            for(let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+                const oldConnectionRow = oldConnections[rowIndex];
+                const columnCount = oldConnectionRow.length;
+                for(let columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+                    if(oldConnectionRow[columnIndex] !== connections[rowIndex][columnIndex]) {
+                        updateCell(rowIndex, columnIndex);
+                    }
+                }
             }
         }
         ruleNumber.classList.toggle('done', allOk || countMaybe === 0 && countErrors === 0);
@@ -423,6 +534,18 @@ document.addEventListener("DOMContentLoaded", async () =>
             return baseToggle(rowIndex, colIndex);
         }
         return reverseToggle(rowIndex, colIndex);
+    };
+
+    const treeMouseUpEvent = (rowIndex, colIndex) => (event: HTMLElementEventMap["mouseup"]) => {
+        const currentTarget = event.currentTarget as HTMLDivElement;
+        const x = (event.layerX - currentTarget.offsetLeft) / currentTarget.offsetWidth;
+        const y = (event.layerY - currentTarget.offsetTop) / currentTarget.offsetHeight;
+        const vertical = x > 0.5 ? {block: BLOCK_E, value: x} : {block: BLOCK_W, value: 1 - x};
+        const horizontal = y > 0.5 ? {block: BLOCK_S, value: y} : {block: BLOCK_N, value: 1 - y};
+        const block = vertical.value > horizontal.value ? vertical.block : horizontal.block;
+        connections[rowIndex][colIndex] ^= block;
+        updateCell(rowIndex, colIndex);
+
     };
 
     const colCountMouseUpEvent = (colIndex) => (event: HTMLElementEventMap["mouseup"]) => {
@@ -548,17 +671,19 @@ document.addEventListener("DOMContentLoaded", async () =>
         const refRow = [];
         const statusRow = [];
         const warningRow = [];
+        const connectionRow = [];
         const rowElement = document.createElement("DIV");
         for(const cell of row)
         {
             const cellElement = document.createElement("DIV");
-            cellElement.addEventListener("mouseup", cellMouseUpEvent(rowIndex, colIndex));
+            cellElement.addEventListener("mouseup", (cell ? treeMouseUpEvent : cellMouseUpEvent)(rowIndex, colIndex));
             cellElement.addEventListener("contextmenu", preventEvent);
             cellElement.classList.add(cell ? 'tree' : 'clear');
             rowElement.append(cellElement);
             refRow.push(cellElement);
             statusRow.push(cell ? TREE : CLEAR);
             warningRow.push(0);
+            connectionRow.push(0);
             colIndex++;
         }
         const cellElement = document.createElement("DIV");
@@ -572,6 +697,7 @@ document.addEventListener("DOMContentLoaded", async () =>
         refCells.push(refRow);
         statuses.push(statusRow);
         warnings.push(warningRow);
+        connections.push(connectionRow);
         rowIndex++;
     }
     const rowElement = document.createElement("DIV");

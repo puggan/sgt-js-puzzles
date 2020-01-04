@@ -40,6 +40,75 @@ body.done {
         background-color: pink;
       }
 
+      &.north {
+        box-shadow: inset 0 .4em .2em -.2em blue;
+      }
+      &.not-north {
+        box-shadow: inset 0 .4em .2em -.2em red;
+      }
+      &.west {
+        box-shadow: inset .4em 0 .2em -.2em blue;
+      }
+      &.not-west {
+        box-shadow: inset .4em 0 .2em -.2em red;
+      }
+      &.south {
+        box-shadow: inset 0 -.4em .2em -.2em blue;
+      }
+      &.not-south {
+        box-shadow: inset 0 -.4em .2em -.2em red;
+      }
+      &.east {
+        box-shadow: inset -.4em 0 .2em -.2em blue;
+      }
+      &.not-east {
+        box-shadow: inset -.4em 0 .2em -.2em red;
+      }
+
+      &.not-north.not-west {
+        box-shadow: inset 0 .4em .2em -.2em red, inset .4em 0 .2em -.2em red;
+      }
+
+      &.not-north.not-south {
+        box-shadow: inset 0 .4em .2em -.2em red, inset 0 -.4em .2em -.2em red;
+      }
+
+      &.not-north.not-east {
+        box-shadow: inset 0 .4em .2em -.2em red, inset -.4em 0 .2em -.2em red;
+      }
+
+      &.not-west.not-south {
+        box-shadow: inset .4em 0 .2em -.2em red, inset 0 -.4em .2em -.2em red;
+      }
+
+      &.not-west.not-east {
+        box-shadow: inset .4em 0 .2em -.2em red, inset -.4em 0 .2em -.2em red;
+      }
+
+      &.not-south.not-east {
+        box-shadow: inset 0 -.4em .2em -.2em red, inset -.4em 0 .2em -.2em red;
+      }
+
+      &.not-north.not-west.not-south {
+        box-shadow: inset 0 .4em .2em -.2em red, inset .4em 0 .2em -.2em red, inset 0 -.4em .2em -.2em red;
+      }
+
+      &.not-north.not-west.not-east {
+        box-shadow: inset 0 .4em .2em -.2em red, inset .4em 0 .2em -.2em red, inset -.4em 0 .2em -.2em red;
+      }
+
+      &.not-north.not-south.not-east {
+        box-shadow: inset 0 .4em .2em -.2em red, inset 0 -.4em .2em -.2em red, inset -.4em 0 .2em -.2em red;
+      }
+
+      &.not-west.not-south.not-east {
+        box-shadow: inset .4em 0 .2em -.2em red, inset 0 -.4em .2em -.2em red, inset -.4em 0 .2em -.2em red;
+      }
+
+      &.not-north.not-west.not-south.not-east {
+        box-shadow: inset 0 .4em .2em -.2em red, inset .4em 0 .2em -.2em red, inset 0 -.4em .2em -.2em red, inset -.4em 0 .2em -.2em red;
+      }
+
       &.tree {
         background-color: green;
         &.error {
